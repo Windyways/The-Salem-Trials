@@ -9,13 +9,13 @@ To add the custom character sprites, you can download the 'ArtSwap' zip for the 
 
 Roles added to this mod:
 
---- VILLAGERS ---\n
-Sheriff - Learn how many liars are adjacent to you. (Mix of Lover + Judge)\n
-Admirer - Pick 1 character: Learn if they are Corrupted. (Village Plague Doctor)\n\n
+--- VILLAGERS ---
+Sheriff - Learn how many liars are adjacent to you. (Mix of Lover + Judge)
+Admirer - Pick 1 character: Learn if they are Corrupted. (Village Plague Doctor)
 
---- MINIONS ---\n
-Pestilence - Game Start: Corrupt a random Good Villager. I Lie and Disguise. (Alternative to Poisoner)\n
-Illusionist - I Lie and Disguise as a not-in-play Villager. (Alternative to Minion)\n\n
+--- MINIONS ---
+Pestilence - Game Start: Corrupt a random Good Villager. I Lie and Disguise. (Alternative to Poisoner)
+Illusionist - I Lie and Disguise as a not-in-play Villager. (Alternative to Minion)
 
---- DEMONS ---\n
+--- DEMONS ---
 Cultist - Game Start: Transform a random Good Villager into an existing Minion. I Lie and Disguise. (Mix of Chancellor + Puppeteer)
