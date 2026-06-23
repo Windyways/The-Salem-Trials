@@ -41,6 +41,7 @@ namespace TheSalemTrials
             if (trigger != ETriggerPhase.Day) return;
             onActed?.Invoke(GetInfo(charRef));
         }
+
         public override void BluffAct(ETriggerPhase trigger, Character charRef)
         {
             if (trigger != ETriggerPhase.Day) return;

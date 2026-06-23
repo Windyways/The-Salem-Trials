@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\johma\\source\\repos\\TheSalemTrials\\TheSalemTrials\\TheSalemTrials.csproj": {}
+    "C:\\Users\\johma\\Documents\\GitHub\\The-Salem-Trials\\TheSalemTrials\\TheSalemTrials.csproj": {}
   },
   "projects": {
-    "C:\\Users\\johma\\source\\repos\\TheSalemTrials\\TheSalemTrials\\TheSalemTrials.csproj": {
+    "C:\\Users\\johma\\Documents\\GitHub\\The-Salem-Trials\\TheSalemTrials\\TheSalemTrials.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\johma\\source\\repos\\TheSalemTrials\\TheSalemTrials\\TheSalemTrials.csproj",
+        "projectUniqueName": "C:\\Users\\johma\\Documents\\GitHub\\The-Salem-Trials\\TheSalemTrials\\TheSalemTrials.csproj",
         "projectName": "TheSalemTrials",
-        "projectPath": "C:\\Users\\johma\\source\\repos\\TheSalemTrials\\TheSalemTrials\\TheSalemTrials.csproj",
+        "projectPath": "C:\\Users\\johma\\Documents\\GitHub\\The-Salem-Trials\\TheSalemTrials\\TheSalemTrials.csproj",
         "packagesPath": "C:\\Users\\johma\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\johma\\source\\repos\\TheSalemTrials\\TheSalemTrials\\obj\\",
+        "outputPath": "C:\\Users\\johma\\Documents\\GitHub\\The-Salem-Trials\\TheSalemTrials\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\johma\\AppData\\Roaming\\NuGet\\NuGet.Config",
