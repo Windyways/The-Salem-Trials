@@ -13,6 +13,8 @@ VILLAGERS
 - Sheriff - Learn how many liars are adjacent to you. (Mix of Lover + Judge)
 - Admirer - Pick 1 character: Learn if they are Corrupted. (Village Plague Doctor)
 - Detective - Learn how close an evil is to a random Good Villager. (Alternative to Scout)
+- Seer - Pick 2 characters: Learn 1 thing they have in common.
 
 MINIONS
 - Illusionist - I Lie and Disguise as a not-in-play Villager. (Alternative to Minion)
+- Shroud - I Lie and Disguise as an in-play Outcast or Villager.
