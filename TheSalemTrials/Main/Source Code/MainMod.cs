@@ -78,15 +78,15 @@ public class MainMod : MelonMod
         CharacterData detective = newCharacter("Detective", EAlignment.Good, ECharacterType.Villager, true, false, "\"The Investigator wonders why i’m better than him. I told him ‘because i just am’.\"", "Bishop_58855542");
         detective.role = new Detective();
         detective.description = "Learn how close an evil is to a random Good Villager.";
-        detective.ifLies = $"The distance is random between 1 and 3.";
+        detective.ifLies = $"I say 1 more or 1 less than the real distance.";
         detective.hints = "I cannot reference myself in my information.";
         detective.gender = EGender.Male;
 
         CharacterData seer = newCharacter("Seer", EAlignment.Good, ECharacterType.Villager, true, false, "\"I can look into who has the truest hearts. The Lover isn’t one of them.\"", "Bishop_58855542");
         seer.role = new Seer();
         seer.description = "Pick 2 characters:\nLearn 1 thing they have in common.";
-        seer.ifLies = $"I say false information (duh).";
-        seer.hints = "I can learn if both characters are:\r\nCorrupted, Disguised, Evil, Good.\n\nI prioritize:\nCorrupted > Disguised > Evil > Good";
+        seer.ifLies = $"I say random false information."; // (duh)
+        seer.hints = "I prioritize:\nCorrupted > Disguised > Evil > Good.";
         seer.picking = true;
         seer.abilityUsage = EAbilityUsage.Once;
         seer.gender = EGender.Male;

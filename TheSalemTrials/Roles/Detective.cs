@@ -56,10 +56,8 @@ public class Detective : Role
         var closestEvil = GetClosestEvilToEvil(pickedEvil, charRef);
 
         int fakeDist = closestEvil.Item1;
-        while (fakeDist != closestEvil.Item1)
-        {
-            fakeDist = UnityEngine.Random.Range(1, 4);
-        }
+        if (fakeDist == 1) fakeDist = 2;
+        else fakeDist -= 1;
 
         info = ConjourInfo(pickedEvil.GetRegisterAs().name, fakeDist);
         ActedInfo newInfo = new ActedInfo(info);
