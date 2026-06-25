@@ -18,7 +18,7 @@ using static Il2Cpp.GameplayEvents;
 using static Il2CppSystem.Array;
 using static MelonLoader.Modules.MelonModule;
 
-[assembly: MelonInfo(typeof(MainMod), "Windyways_TheSalemTrials", "1.1.0", "Windyways")]
+[assembly: MelonInfo(typeof(MainMod), "Windyways_TheSalemTrials", "1.2.0", "Windyways")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace TheSalemTrials;
@@ -31,6 +31,11 @@ public class MainMod : MelonMod
         ClassInjector.RegisterTypeInIl2Cpp<Admirer>();
         ClassInjector.RegisterTypeInIl2Cpp<Detective>();
         ClassInjector.RegisterTypeInIl2Cpp<Seer>();
+        ClassInjector.RegisterTypeInIl2Cpp<Cleric>();
+        ClassInjector.RegisterTypeInIl2Cpp<Psychic>();
+
+        // Outcasts
+        //ClassInjector.RegisterTypeInIl2Cpp<Starspawn>();
 
         // Minions
         ClassInjector.RegisterTypeInIl2Cpp<Illusionist>();
@@ -54,11 +59,13 @@ public class MainMod : MelonMod
         // --- MINION ---
         // Pestilence (v3) - Corrupt a random Good Villager. I Lie and Disguise.
         // Conjurer - Game Start: Execute a random Good Villager. I Lie and Disguise.
+        // Trickster - I Lie and Disguise as a bluffing villager.
 
         // --- DEMON ---
         // Serial Killer - At Night, i kill an unrevealed Good Villager if possible. Nighttime comes 2x faster. I do not Lie. I do not Disguise.
         // Cultist - Game Start: All Outcasts are replaced with 'Minion'. I Lie and Disguise.
         // Pestilence (v2) - Reveal: Deal 1 damage to you each time a card is revealed. If Executed, Corrupt remaining unrevealed Good Villagers. I do not lie and I do not Disguise.
+        // Vampire - Game Start:\nAll Minions become Vampires.\n\nYou take 1 damage when Executing me.\n\nI Lie and Disguise.
 
         // --- VILLAGERS ---
         CharacterData sheriff = newCharacter("Sheriff", EAlignment.Good, ECharacterType.Villager, true, false, "\"The gun shows 'em who's boss. Don't lie to me.\"", "Bishop_58855542");
@@ -70,7 +77,7 @@ public class MainMod : MelonMod
         CharacterData admirer = newCharacter("Admirer", EAlignment.Good, ECharacterType.Villager, true, false, "\"This may sound creepy, but i watched her through the window.\"", "Bishop_58855542");
         admirer.role = new Admirer();
         admirer.description = "Pick 1 character:\nLearn if they are Corrupted.";
-        admirer.ifLies = $"I say ‘Not Corrupted’ if the target is Lying.\nI say ‘Corrupted’ if the target is not Corrupted.";
+        admirer.ifLies = $"I say the opposite from the Truth.";
         admirer.picking = true;
         admirer.abilityUsage = EAbilityUsage.Once;
         admirer.gender = EGender.Male;
@@ -78,7 +85,7 @@ public class MainMod : MelonMod
         CharacterData detective = newCharacter("Detective", EAlignment.Good, ECharacterType.Villager, true, false, "\"The Investigator wonders why i’m better than him. I told him ‘because i just am’.\"", "Bishop_58855542");
         detective.role = new Detective();
         detective.description = "Learn how close an evil is to a random Good Villager.";
-        detective.ifLies = $"I say 1 more or 1 less than the real distance.";
+        detective.ifLies = $"I do not say the Truth.";
         detective.hints = "I cannot reference myself in my information.";
         detective.gender = EGender.Male;
 
@@ -91,7 +98,25 @@ public class MainMod : MelonMod
         seer.abilityUsage = EAbilityUsage.Once;
         seer.gender = EGender.Male;
 
+        CharacterData cleric = newCharacter("Cleric", EAlignment.Good, ECharacterType.Villager, true, false, "\"I am skilled in the art of purification. Unlike those people.\"", "Bishop_58855542");
+        cleric.role = new Cleric();
+        cleric.description = "Reveal:\nCleanse 1 Good Villager of Corruption (if possible). I Learn who I Cleansed.";
+        cleric.ifLies = $"I say opposite from the Truth and I do not Cleanse.";
+        cleric.hints = "If I am Revealed before I Cleanse my target, they will still Lie.";
+        cleric.gender = EGender.Male;
+
+        CharacterData psychic = newCharacter("Psychic", EAlignment.Good, ECharacterType.Villager, true, false, "\"The gun shows 'em who's boss. Don't lie to me.\"", "Bishop_58855542");
+        psychic.role = new Psychic();
+        psychic.description = "Learn how many Evils have been Revealed.";
+        psychic.ifLies = $"I do not say the Truth.";
+        psychic.gender = EGender.Male;
+
         // --- OUTCASTS ---
+        /*CharacterData starspawn = newCharacter("Starspawn", EAlignment.Good, ECharacterType.Outcast, true, true, "\"I don’t like to reveal my identity. But i am talented at everything.\"", "Imp_58992273");
+        starspawn.role = new Starspawn();
+        starspawn.description = "I Disguise as an in-play Outcast (if possible).";
+        starspawn.gender = EGender.Male; - I'll find a possible solution to make this different from Doppel.
+        */
 
         // --- MINIONS ---
         CharacterData illusionist = newCharacter("Illusionist", EAlignment.Evil, ECharacterType.Minion, true, true, "\"I am the best at casting magic huh?\"", "Imp_58992273");
@@ -101,11 +126,15 @@ public class MainMod : MelonMod
 
         CharacterData shroud = newCharacter("Shroud", EAlignment.Evil, ECharacterType.Minion, true, true, "\"I’m like, literally a ghost. That’s bluffing. Yeah.\"", "Imp_58992273");
         shroud.role = new Shroud();
-        shroud.description = "I Lie and Disguise as an in-play Outcast or Villager.";
+        shroud.description = "I Lie and Disguise as an in-play Outcast or Villager (if possible).";
+        shroud.hints = "If there are no valid characters to Disguise as, i will not Lie or Disguise.";
         shroud.gender = EGender.Male;
 
         // --- DEMONS ---
 
+
+        // Vanilla order: Baa, Chancellor, Pooka, Poisoner, Witch, Puppeteer, Plague Doctor, Shaman, Alchemist, Puppet, Lilis
+        //Characters.Instance.startGameActOrder = InsertAfterAct("Chancellor", vampire);
 
         AscensionsData advancedAscension = ProjectContext.Instance.gameData.advancedAscension;
 
@@ -131,6 +160,10 @@ public class MainMod : MelonMod
             addRole(script.startingTownsfolks, admirer);
             addRole(script.startingTownsfolks, detective);
             addRole(script.startingTownsfolks, seer);
+            addRole(script.startingTownsfolks, cleric);
+            addRole(script.startingTownsfolks, psychic);
+
+            //addRole(script.startingOutsiders, starspawn);
 
             addRole(script.startingMinions, illusionist);
             addRole(script.startingMinions, shroud);
@@ -408,7 +441,7 @@ public class MainMod : MelonMod
 
     public static class HiddenRoleStatus
     {
-        public static ECharacterStatus hiddenRole = (ECharacterStatus)999;
+        //public static ECharacterStatus hiddenRole = (ECharacterStatus)1000;
     }
 
     public static CharacterData newCharacter(string name, EAlignment alignment, ECharacterType type, bool bluffable, bool usuallyDisguised, string flavour, string placeholderArtID)
@@ -549,23 +582,6 @@ public class MainMod : MelonMod
         return returnList;
     }
 
-    string roleColour(string type)
-    {
-        switch (type)
-        {
-            // Types
-            case "Villager": return formattedKeyText("VillagerColour");
-            case "Outcast": return formattedKeyText("OutcastColour");
-            case "Minion": return formattedKeyText("MinionColour");
-            case "Demon": return formattedKeyText("DemonColour");
-            case "EvilVillager": return formattedKeyText("EvilVillagerColour");
-            case "EvilOutcast": return formattedKeyText("EvilOutcastColour");
-            case "GoodMinion": return formattedKeyText("GoodMinionColour");
-            case "GoodDemon": return formattedKeyText("GoodDemonColour");
-        }
-        return formattedKeyText("");
-    }
-
     public static Color getColour(ECharacterType type, EAlignment alignment, string field)
     {
         // Type = character type
@@ -677,86 +693,7 @@ public class MainMod : MelonMod
         switch (target)
         {
             // Keywords
-            case "Honest": return "<color=#7AC6FF>Honest</color>";
-            case "Pure": return "<color=#7AFBFF>Pure</color>";
-            case "Cure": return "<color=#7AFBFF>Cure</color>";
-            case "Cured": return "<color=#7AFBFF>Cured</color>";
-            case "Heal": return "<color=#2EFF43>Heal</color>";
-            case "Max Health": return "<color=#7AFBFF>Max Health</color>";
-            case "Health": return "<color=#7AFBFF>Health</color>";
-            case "Damage": return "<color=#C72424>Damage</color>";
-            case "True Role": return "<color=#57E69C>True Role</color>";
-            case "Truthful": return "<color=#3A95D6>Truthful</color>";
-            case "Truth": return "<color=#3A95D6>Truth</color>";
-            case "Reveal": return "<color=#A1E6E2>Reveal</color>";
-            case "Reveals": return "<color=#A1E6E2>Reveals</color>";
-            case "Revealed": return "<color=#A1E6E2>Revealed</color>";
-            case "Hidden": return "<color=#697D91>Hidden</color>";
-            case "Unrevealed": return "<color=#697D91>Unrevealed</color>";
-            case "Bluff": return "<color=#D96EDB>Bluff</color>";
-            case "Bluffing": return "<color=#D96EDB>Bluffing</color>";
-            case "Attack": return "<color=#FF0037>Attack</color>";
-            case "Kill": return "<color=#FF0037>Kill</color>";
-            case "Killed": return "<color=#FF0037>Killed</color>";
-            case "Killing": return "<color=#FF0037>Killing</color>";
-            case "Dead": return "<color=#B36979>Dead</color>";
-            case "Die": return "<color=#B36979>Die</color>";
-            case "Alive": return "<color=#A4EDB7>Alive</color>";
-            case "Living": return "<color=#A4EDB7>Living</color>";
-            case "Deck": return "<color=#789AF0>Deck</color>";
-            case "Lose": return "<color=#FF0000>Lose</color>";
-            // Cycle is gonna be a long one because of the fancy gradient I'm doing
-            case "Cycle": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e</color>";
-            case "Cycle 1": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e 1</color>";
-            case "Cycle 2": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e 2</color>";
-            case "Cycle 3": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e 3</color>";
-            case "Cycle 4": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e 4</color>";
-            case "Cycle 5": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e 5</color>";
-            case "Cycle 6": return "<color=#99ff99>C</color><color=#99e6b3>y</color><color=#99cccc>c</color><color=#99b3e6>l</color><color=#9999ff>e 6</color>"; // Cycles beyond 6 are pointless
-
-            // Custom role keywords
-            case "Poison": return "<color=#3F8538>Poison</color>"; // For unused Toxomancer role.
-            case "Poisoned": return "<color=#3F8538>Poisoned</color>";
-            case "Trick": return "<color=#70E8FF>Trick</color>"; // Used by Faerie.
-            case "Tricked": return "<color=#70E8FF>Tricked</color>";
-            case "Bewildered": return "<color=#70E8FF>Bewil</color><color=#FF00DD>dered</color>"; // Also used by Faerie.
-            case "Misled": return "<color=#FF00AE>Misled</color>"; // Used by Venelum and Vidiyon.
-
-
-            // Devs
-            case "Normandia": return "<color=#CE1119>Normandia</color>";
-            case "Uzabi": return "<color=#CE1119>Uzabi</color>";
-
-            // Modders
-            case "@tstidon": return "<color=#7289DA>@</color><color=#C080FF>tstidon</color>";
-            case "TSTidon": return "<color=#C080FF>TSTidon</color>";
-            case "WWW": return "<color=#3BA55C>WWW is not taken</color>";
-            case "@WWW": return "<color=#7289DA>@</color><color=#3BA55C>wwwisnottaken</color>";
-            case "Carlz": return "<color=#5FC4F9>Carlz</color>";
-            case "@Carlz": return "<color=#7289DA>@</color><color=#5FC4F9>carlz54339</color>";
-
-            // Art credits
-            case "Blue Cheesed": return "<color=#D8D8D8>Blue Cheesed</color>"; // Arithmetician
-            case "@Blue Cheesed": return "<color=#7289DA>@</color><color=#D8D8D8>hydethefish</color>";
-            case "WeekendWolf": return "<color=#5476ff>WeekendWolf</color>"; // Forager, Sentinel, Lunatic
-            case "@weekendwolf": return "<color=#7289DA>@</color><color=#5476ff>hellzalley</color>";
-            case "Astery": return "<color=#d506c7>Astery</color>"; // Gemcrafter
-            case "@astery": return "<color=#7289DA>@</color><color=#d506c7>astery__</color>";
-            case "LostIllustrator": return "<color=#45e0f8>Lost Illustrator</color>"; // Scavenger
-            case "@lostillustrator": return "<color=#7289DA>@</color><color=#45e0f8>lostillustrator</color>";
-            case "Hiraeth": return "<color=#4b53d5>Hiraeth</color>"; // Warden
-            case "@hiraeth": return "<color=#7289DA>@</color><color=#4b53d5>lullabiesmourn</color>";
-            case "Panda": return "<color=#cadee6>Panda</color>"; // Spy
-            case "@Panda": return "<color=#7289DA>@</color><color=#cadee6>@pandacharly</color>";
-            case "Derpy_Feesh": return "<color=#7948d7>Derpy_Feesh</color>"; // Leviathan
-            case "@derpy_feesh": return "<color=#7289DA>@</color><color=#7948d7>derpy_feesh</color>"; // Leviathan
-
-            // Special thanks
-            case "NoLucksGiven": return "<color=#FFC07B>NoLucksGiven</color>"; // Played mod on YouTube, brought attention to it.
-            case "D_NoLucksGiven": return "<color=#7289DA>@</color><color=#FFC07B>nolucksgiven</color>";
-            case "Y_NoLucksGiven": return $"<color=#FFC07B>https://www.{formattedKeyText("YouTube")}.com/c/NoLucksGiven</color>";
-            case "Fi": return "<color=#96EAFF>Fi the Dragonfly</color>"; // Faerie character is literally Fi lmao
-            case "@fithedragonfly": return "<color=#96EAFF>@fithedragonfly</color>";
+            case "Cleanse": return "<color=#a0d1d0>Cleanse</color>";
 
             // Colours
             case "VillagerColour": return "<color=#B656DD>";
@@ -771,14 +708,8 @@ public class MainMod : MelonMod
             case "EvilOutcastColour": return "<color=#FF00DD>";
             case "GoodMinionColour": return "<color=#33D1C6>";
             case "GoodDemonColour": return "<color=#7A5CFF>";
-
-            // Platforms
-            case "Discord": return "<color=#7289DA>Discord</color>";
-            case "Tumblr": return "<color=#36465D>Tumblr</color>";
-            case "YouTube": return "<color=#FE0000>YouTube</color>";
-            case "Youtube": return "<color=#FE0000>YouTube</color>";
         }
-        return "Formatted key text invalid, please report this to TSTidon.";
+        return "Formatted key text invalid.";
     }
 
 
@@ -787,272 +718,16 @@ public class MainMod : MelonMod
         for (int i = 0; i < allDatas.Count(); i++)
         {
             MelonLogger.Msg($"Description Patcher: Found {allDatas[i].name.ToString()}");
-            if (allDatas[i].characterName == "Witness")
+            /*if (allDatas[i].characterName == "Witness")
             {
                 allDatas[i].hints += "\n- Character Corrupted by Pestilence" +
                                      "\n- Character transformed by Cultist";
                 MelonLogger.Msg($"Patched Witness. New description: {allDatas[i].hints}");
-            }
-        }
-    }
-    //int toxomancerPoisonTimer = 0;
-    //int toxomancerDeathTimer = 0;
-
-
-    /*private void OnCharacterRevealed(Character revealed)
-    {
-        toxomancerPoisonTimer -= 1;
-        toxomancerDeathTimer -= 1;
-        CharacterData charData = revealed.dataRef;
-        Il2CppSystem.Collections.Generic.List<Character> allChars = new Il2CppSystem.Collections.Generic.List<Character>(Gameplay.CurrentCharacters.Pointer);
-
-        int revealCount = 0;
-        for (int i = 0; i < allChars.Count; i++)
-        {
-            if (allChars[i].revealed == true)
-            {
-                revealCount++;
-            }
-        }
-        if (revealCount == 1)
-        {
-            toxomancerPoisonTimer = 2;
-            toxomancerDeathTimer = 4;
-        }
-
-        bool toxomancerInPlay = false;
-        Character toxomancer = new Character();
-        for (int i = 0; i < allChars.Count; i++)
-        {
-            if (allChars[i].dataRef.characterId == "Toxomancer_TST" && allChars[i].state != ECharacterState.Dead)
-            {
-                toxomancerInPlay = true;
-                break;
-            }
-            if (allChars[i].dataRef.characterId == "Toxomancer_TST")
-            {
-                toxomancer = allChars[i];
-            }
-        }
-        if (toxomancerInPlay)
-        {
-            if (toxomancerPoisonTimer == 0)
-            {
-                Il2CppSystem.Collections.Generic.List<Character> possiblePoisonTargets = new Il2CppSystem.Collections.Generic.List<Character>();
-                foreach (Character character in allChars)
-                {
-                    if (character.GetRegisterAs().type == ECharacterType.Villager && character.GetRegisterAlignment() == EAlignment.Good && character.state != ECharacterState.Dead)
-                    {
-                        possiblePoisonTargets.Add(character);
-                    }
-                }
-                Character poisonTarget = possiblePoisonTargets[UnityEngine.Random.RandomRangeInt(0, possiblePoisonTargets.Count)];
-                poisonTarget.statuses.AddStatus(ECharacterStatus.Corrupted, toxomancer);
-                poisonTarget.statuses.AddStatus(w_Toxomancer.ToxomancerPoison.toxomancerPoison, toxomancer);
-                toxomancerPoisonTimer = 3;
-                toxomancerDeathTimer = 2;
-            }
-        }
-        if (toxomancerDeathTimer == 0)
-        {
-            foreach (Character character in allChars)
-            {
-                if (character.statuses.Contains(w_Toxomancer.ToxomancerPoison.toxomancerPoison))
-                {
-                    PlayerController.PlayerInfo.health.Damage(1);
-                    character.RevealAllReal();
-                    character.KillByDemon(toxomancer);
-                }
-            }
-        }
-
-    }*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    [HarmonyPatch(typeof(Gossip), nameof(Gossip.Act))]
-    private static class GetPoetTrueInfo
-    {
-        private static bool Prefix(Gossip __instance, ETriggerPhase trigger, Character charRef)
-        {
-            if (trigger != ETriggerPhase.Day) return true;
-            if (charRef.bluff)
-            {
-                if (charRef.bluff.characterId != "Gossip_85354100")
-                {
-                    return true;
-                }
-            }
-            else if (charRef.dataRef.characterId != "Gossip_85354100")
-            {
-                return true;
-            }
-            Il2CppSystem.Collections.Generic.List<Role> infoRoles = new Il2CppSystem.Collections.Generic.List<Role>();
-            infoRoles.Add(new Empath());
-            infoRoles.Add(new Scout());
-            infoRoles.Add(new Investigator());
-            infoRoles.Add(new BountyHunter());
-            infoRoles.Add(new Lookout());
-            infoRoles.Add(new Knitter());
-            infoRoles.Add(new Tracker());
-            infoRoles.Add(new Shugenja());
-            infoRoles.Add(new Noble());
-            infoRoles.Add(new Bishop());
-            infoRoles.Add(new Archivist());
-            infoRoles.Add(new Acrobat2());
-            infoRoles.Add(new w_Arithmetician());
-            infoRoles.Add(new w_Chiromancer());
-            infoRoles.Add(new w_Clairvoyant());
-            infoRoles.Add(new w_Detective());
-            infoRoles.Add(new w_Introvert());
-            infoRoles.Add(new w_Jewelsmith());
-            infoRoles.Add(new w_Lamb());
-            infoRoles.Add(new w_Prince());
-            infoRoles.Add(new w_Ranger());
-            infoRoles.Add(new w_Sentinel());
-            infoRoles.Add(new w_Spy());
-            ActedInfo myInfo = infoRoles[UnityEngine.Random.RandomRangeInt(0, infoRoles.Count)].GetInfo(charRef);
-            __instance.onActed?.Invoke(myInfo);
-            return false;
+            }*/
         }
     }
 
 
-    [HarmonyPatch(typeof(Gossip), nameof(Gossip.BluffAct))]
-    private static class GetPoetFalseInfo
-    {
-        private static bool Prefix(Gossip __instance, ETriggerPhase trigger, Character charRef)
-        {
-            if (trigger != ETriggerPhase.Day) return true;
-            if (charRef.bluff)
-            {
-                if (charRef.bluff.characterId != "Gossip_85354100")
-                {
-                    return true;
-                }
-            }
-            else if (charRef.dataRef.characterId != "Gossip_85354100")
-            {
-                return true;
-            }
-            Il2CppSystem.Collections.Generic.List<Role> infoRoles = new Il2CppSystem.Collections.Generic.List<Role>();
-            infoRoles.Add(new Empath());
-            infoRoles.Add(new Scout());
-            infoRoles.Add(new Investigator());
-            infoRoles.Add(new BountyHunter());
-            infoRoles.Add(new Lookout());
-            infoRoles.Add(new Knitter());
-            infoRoles.Add(new Tracker());
-            infoRoles.Add(new Shugenja());
-            infoRoles.Add(new Noble());
-            infoRoles.Add(new Bishop());
-            infoRoles.Add(new Archivist());
-            infoRoles.Add(new Acrobat2());
-            infoRoles.Add(new w_Arithmetician());
-            infoRoles.Add(new w_Chiromancer());
-            infoRoles.Add(new w_Clairvoyant());
-            infoRoles.Add(new w_Detective());
-            infoRoles.Add(new w_Introvert());
-            infoRoles.Add(new w_Jewelsmith());
-            infoRoles.Add(new w_Lamb());
-            infoRoles.Add(new w_Prince());
-            infoRoles.Add(new w_Ranger());
-            infoRoles.Add(new w_Sentinel());
-            infoRoles.Add(new w_Spy());
-            ActedInfo myInfo = infoRoles[UnityEngine.Random.RandomRangeInt(0, infoRoles.Count)].GetBluffInfo(charRef);
-            __instance.onActed?.Invoke(myInfo);
-            return false;
-        }
-    }
-    */
-
-
-    /* Was causing crashes.
-    [HarmonyPatch(typeof(Investigator), nameof(Investigator.BluffAct))]
-    private static class GetOracleFalseInfo // Practically identical, save for the fact that it can't see Good Minions. Should fix problems with Good Swarm.
-    {
-        private static bool Prefix(Gossip __instance, ETriggerPhase trigger, Character charRef)
-        {
-            if (trigger != ETriggerPhase.Day) return true;
-            if (charRef.bluff)
-            {
-                if (charRef.bluff.characterId != "Oracle_07039445")
-                {
-                    return true;
-                }
-            }
-            else if (charRef.dataRef.characterId != "Oracle_07039445")
-            {
-                return true;
-            }
-            Il2CppSystem.Collections.Generic.List<Character> possibleInfoTargets = new Il2CppSystem.Collections.Generic.List<Character>();
-            Il2CppSystem.Collections.Generic.List<Character> infoTargets = new Il2CppSystem.Collections.Generic.List<Character>();
-            Il2CppSystem.Collections.Generic.List<CharacterData> deckMinions = Gameplay.Instance.GetScriptCharactersOfType(ECharacterType.Minion);
-            CharacterData chosenMinion = new CharacterData();
-            if (deckMinions.Count == 0)
-            {
-                foreach (CharacterData character in Gameplay.Instance.GetAllAscensionCharacters())
-                {
-                    if (character.type == ECharacterType.Minion)
-                    {
-                        deckMinions.Add(character);
-                    }
-                }
-            }
-            chosenMinion = deckMinions[UnityEngine.Random.RandomRangeInt(0, deckMinions.Count)];
-            foreach (Character character in Gameplay.CurrentCharacters)
-            {
-                if (character.GetRegisterAlignment() == EAlignment.Good && character.GetCharacterType() != ECharacterType.Minion)
-                {
-                    possibleInfoTargets.Add(character);
-                }
-            }
-            string actInfo = "";
-            if (possibleInfoTargets.Count < 2)
-            {
-                actInfo = "This village confuses me.";
-            }
-            infoTargets.Add(possibleInfoTargets[UnityEngine.Random.RandomRangeInt(0, possibleInfoTargets.Count)]);
-            possibleInfoTargets.Remove(infoTargets[0]);
-            infoTargets.Add(possibleInfoTargets[UnityEngine.Random.RandomRangeInt(0, possibleInfoTargets.Count)]);
-
-            if (infoTargets[0].id < infoTargets[1].id)
-            {
-                actInfo = string.Format("#{0} or #{1} is a {2}", infoTargets[0].id, infoTargets[1].id, chosenMinion.name.ToString());
-            }
-            else
-            {
-                actInfo = string.Format("#{0} or #{1} is a {2}", infoTargets[1].id, infoTargets[0].id, chosenMinion.name.ToString());
-            }
-            ActedInfo myInfo = new ActedInfo(actInfo, infoTargets);
-            __instance.onActed?.Invoke(myInfo);
-            return false;
-        }
-    }
-    */
 
 
     [HarmonyPatch(typeof(ObjectivesUI), nameof(ObjectivesUI.UpdateObjectives))]
@@ -1068,15 +743,6 @@ public class MainMod : MelonMod
             Il2CppSystem.Collections.Generic.List<Character> allCurrentCharacters = new Il2CppSystem.Collections.Generic.List<Character>(Gameplay.CurrentCharacters.Pointer);
             Il2CppSystem.Collections.Generic.List<CharacterData> allCurrentCharactersData = new Il2CppSystem.Collections.Generic.List<CharacterData>(Gameplay.Instance.GetScriptCharacters().Pointer);
             Il2CppSystem.Collections.Generic.List<string> Evils = new();
-            //Il2CppSystem.Collections.Generic.List<string> allCurrentCharactersNames;
-            //Il2CppSystem.Collections.Generic.List<string> allCurrentCharactersDataNames;
-
-            //allCurrentCharactersNames = sortByName(allCurrentCharacters);
-            //allCurrentCharactersDataNames = sortByName(allCurrentCharactersData);
-
-
-
-
 
 
             int minEvilsKilled = 0;
@@ -1087,88 +753,16 @@ public class MainMod : MelonMod
 
             foreach (var deadCharacter in deadCharacters)
             {
-                if (deadCharacter.alignment == EAlignment.Evil || deadCharacter.statuses.Contains(HiddenRoleStatus.hiddenRole))
+                if (deadCharacter.alignment == EAlignment.Evil/* || deadCharacter.statuses.Contains(HiddenRoleStatus.hiddenRole)*/)
                 {
                     maxEvilsKilled++;
-                    if (!deadCharacter.statuses.Contains(HiddenRoleStatus.hiddenRole))
-                    {
+                    //if (!deadCharacter.statuses.Contains(HiddenRoleStatus.hiddenRole))
+                    //{
                         minEvilsKilled++;
-                    }
+                    //}
                 }
             }
 
-
-            //foreach (var character in allCurrentCharacters)
-            //{
-
-            //string characterData = allCurrentCharactersData[i].name.ToString();
-            //string character;
-
-            /*if (i <= allCurrentCharacters.Count - 1)
-            {
-               character = allCurrentCharactersNames[i];
-            }
-            else
-            {
-                character = "";
-            }*/
-            //MelonLogger.Msg("Character: " + character.dataRef.name.ToString());
-
-            /*if (character == "Belias" || character == "Mayor" || character == "Good Twin" || character == "Puppeteer" || character == "Hypnotist" || character == "Executioner")
-            {
-
-                AddedEvils1++;
-            }*/
-
-
-            //if (character.dataRef.name == "Belias" || character.dataRef.name == "Mayor" || character.dataRef.name == "Good Twin" || character.dataRef.name == "Puppeteer" || character.dataRef.name == "Hypnotist" || character.dataRef.name == "Executioner")
-            //{
-            //if (Evils.Contains(character.dataRef.name.ToString()))
-            //{
-            //    AddedEvils++;
-            //}
-
-            //else
-            //{
-            //   Evils.Add(character.dataRef.name.ToString());
-            //    AddedEvils++;
-            //}
-
-            //}
-
-            //}
-
-            //foreach (var characterData in allCurrentCharactersData)
-            //{
-            //   if (characterData.name.ToString() == "Hellspawn")
-            //        MaxEvils++;
-            //    if (characterData.name == "Belias" || characterData.name == "Mayor" || characterData.name == "Good Twin" || characterData.name == "Puppeteer" || characterData.name == "Hypnotist" || characterData.name == "Executioner")
-            //    {
-
-            //        if (!Evils.Contains(characterData.name.ToString()))
-            //        {
-            //            Evils.Add(characterData.name.ToString());
-            //            AddedEvils++;
-            //        }
-            //    }
-
-            //}
-
-            /*if(AddedEvils2 > AddedEvils1)
-            {
-                AddedEvils = AddedEvils2;
-            }
-
-            else
-            {
-                AddedEvils = AddedEvils1;
-            }*/
-
-            //string EvilsKilledText = EvilsKilled.ToString();
-            //string MaxEvilsAmount = AddedEvils.ToString();
-
-            //if (MaxEvils < minions + demons)
-            // MaxEvils++;
             if (minEvilsKilled == maxEvilsKilled)
             {
                 __instance.evilsKilled.text = System.String.Format("<color=grey>Evils killed:</color> <color=red>{0}", minEvilsKilled);
@@ -1211,73 +805,7 @@ public class MainMod : MelonMod
     {
         public static Dictionary<string, CharacterData> roles = new Dictionary<string, CharacterData>();
         public static CharacterData[] charactersArray = Il2CppSystem.Array.Empty<CharacterData>();
-        /*
-        public static void checkCreateCircle(Transform parent, int size)
-        {
-            string name = "Circle_" + size;
-            Transform t = parent.FindChild(name);
-            if (t != null)
-            {
-                MelonLogger.Msg("Object Already exists!: " + name);
-                return;
-            }
-            //createCircle(parent, size, name);
-        }
-        public static GameObject createCircle(int size) // I'm just gonna wait for WWW to figure this out
-        {
-            GameObject circle = new GameObject();
-            circle.name = "Circle_" + size;
-            circle.transform.SetParent(Characters.Instance.gameObject.transform);
-            RectTransform rect = circle.AddComponent<RectTransform>();
-            CharactersPool circPool = circle.AddComponent<CharactersPool>();
-            GameObject circ6 = Characters.Instance.gameObject.transform.Find("Circle_6").gameObject;
-            CharactersPool circ6Pool = circ6.GetComponent<CharactersPool>();
-            circPool.characterPrefab = circ6Pool.characterPrefab;
-            circPool.characters = new Character[0];
-            circPool.cardPlaceHolders = new CardPlaceholder[size];
-            for (int i = 0; i < size; i++)
-            {
-                GameObject cardHolder = new GameObject();
-                cardHolder.transform.SetParent(circle.transform);
-                string name = "CardPlaceholder";
-                if (i > 0)
-                {
-                    name += " (" + i + ")";
-                }
-                cardHolder.name = name;
-                RectTransform cardRect = cardHolder.AddComponent<RectTransform>();
-                cardRect.anchoredPosition3D = new Vector3(0f, 0f, 0f);
-                CardPlaceholder placeholder = cardHolder.AddComponent<CardPlaceholder>();
-                int angle = i * 360 / size;
-                if (angle <= 30)
-                {
-                    placeholder.actedSide = EActedSide.Down;
-                }
-                else if (angle <= 149)
-                {
-                    placeholder.actedSide = EActedSide.Left;
-                }
-                else if (angle <= 210)
-                {
-                    placeholder.actedSide = EActedSide.Up;
-                }
-                else if (angle <= 329)
-                {
-                    placeholder.actedSide = EActedSide.Right;
-                }
-                else
-                {
-                    placeholder.actedSide = EActedSide.Down;
-                }
-                circPool.cardPlaceHolders[i] = placeholder;
-            }
-            circle.transform.position = new UnityEngine.Vector3(0f, 1f, 85.9444f);
-            circle.transform.localScale = new UnityEngine.Vector3(1f, 1f, 1f);
-            circle.SetActive(false);
-            addToCharsPool(circPool);
-            return circle;
-        }
-        */
+
         public static void addToCharsPool(CharactersPool pool)
         {
             CharactersPool[] pools = Characters.Instance.characterPool;

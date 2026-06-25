@@ -10,7 +10,7 @@ using UnityEngine;
 namespace TheSalemTrials;
 
 [RegisterTypeInIl2Cpp]
-public class Seer : Role
+public class Seer : Role // Code base from Arbiter from Demon Bluff Expansion Pack!
 {
     Character chRef;
     private Il2CppSystem.Action action1;
@@ -53,18 +53,16 @@ public class Seer : Role
         chars.Add(CharacterPicker.PickedCharacters[0]);
         chars.Add(CharacterPicker.PickedCharacters[1]);
 
-        string info = $"";
-        if (chars[0].IsCorrupted() && chars[1].IsCorrupted()) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Corruption!";
-        else if (chars[0].bluff && chars[1].bluff) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Disguising!";
-        else if (chars[0].alignment == EAlignment.Evil && chars[1].alignment == EAlignment.Evil) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Evil!";
-        else if (chars[0].alignment == EAlignment.Good && chars[1].alignment == EAlignment.Good) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Good!";
-        else info = $"#{chars[0].id} and #{chars[1].id}\nhave nothing in common!";
+        int index = 0;
+        if (chars[0].IsCorrupted() && chars[1].IsCorrupted()) index = 1;
+        else if (chars[0].IsDisguising() && chars[1].IsDisguising()) index = 2;
+        else if (chars[0].alignment == chars[1].alignment) index = 3;
 
+        string info = InfoFromIndex(chars[0], chars[1], index);
         onActed?.Invoke(new ActedInfo(info, chars));
-        Debug.Log($"{info}");
     }
 
-    private void CharacterPickedLiar()
+    private void CharacterPickedLiar() // Pain in the butt to comprehend.
     {
         CharacterPicker.OnCharactersPicked -= action1;
         CharacterPicker.OnStopPick -= action2;
@@ -73,12 +71,7 @@ public class Seer : Role
         chars.Add(CharacterPicker.PickedCharacters[0]);
         chars.Add(CharacterPicker.PickedCharacters[1]);
 
-        string info = $"";
-        int trueInfo = 0;
-        if (chars[0].IsCorrupted() && chars[1].IsCorrupted()) trueInfo = 1;
-        else if (chars[0].bluff && chars[1].bluff) trueInfo = 2;
-        else if (chars[0].alignment == EAlignment.Evil && chars[1].alignment == EAlignment.Evil) trueInfo = 3;
-        else if (chars[0].alignment == EAlignment.Good && chars[1].alignment == EAlignment.Good) trueInfo = 4;
+        /*string info = $"";
 
         if (trueInfo == 1)
         {
@@ -119,10 +112,15 @@ public class Seer : Role
             if (diceRoll == 2) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Evil!";
             if (diceRoll == 3) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Good!";
             if (diceRoll == 4) info = $"#{chars[0].id} and #{chars[1].id}\nare common\nwith Disguising!";
-        }
+        }*/
 
+        int index = 0;
+        if (chars[0].IsCorrupted() && chars[1].IsCorrupted()) index = 1;
+        else if (chars[0].IsDisguising() && chars[1].IsDisguising()) index = 2;
+        else if (chars[0].alignment == chars[1].alignment) index = 3;
+
+        string info = InfoFromIndex(chars[0], chars[1], Ext.MakeNumberWrong(index, 2, 0));
         onActed?.Invoke(new ActedInfo(info, chars));
-        Debug.Log($"{info}");
     }
 
     private void StopPick()
@@ -145,5 +143,13 @@ public class Seer : Role
         action1 = new System.Action(CharacterPicked);
         action2 = new System.Action(StopPick);
         action3 = new System.Action(CharacterPickedLiar);
+    }
+
+    private string InfoFromIndex(Character c1, Character c2, int index)
+    {
+        if (index == 1) return $"#{c1.id} and #{c2.id}\nare both\nCorrupted!";
+        if (index == 2) return $"#{c1.id} and #{c2.id}\nare both\nDisguising!";
+        if (index == 3) return $"#{c1.id} and #{c2.id}\nhave the same alignment!";
+        return $"#{c1.id} and #{c2.id}\nhave nothing in common!";
     }
 }

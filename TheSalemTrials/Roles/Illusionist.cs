@@ -20,7 +20,6 @@ namespace TheSalemTrials
             // Become a new character
             CharacterData bluff = Characters.Instance.GetRandomUniqueVillagerBluff();
             Gameplay.Instance.AddScriptCharacterIfAble(bluff.type, bluff);
-
             return bluff;
         }
     }

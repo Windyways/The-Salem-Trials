@@ -16,17 +16,19 @@ public class Detective : Role
     {
         string info = "";
 
+        Il2CppSystem.Collections.Generic.List<Character> picked = new Il2CppSystem.Collections.Generic.List<Character>();
         Il2CppSystem.Collections.Generic.List<Character> allVillagers = new Il2CppSystem.Collections.Generic.List<Character>();
         allVillagers = Characters.Instance.FilterCharacterType(Gameplay.CurrentCharacters, ECharacterType.Villager);
         //allVillagers = Characters.Instance.RemoveCharacterType<Recluse>(allVillagers);
 
         allVillagers.Remove(charRef);
         Character pickedEvil = allVillagers[UnityEngine.Random.Range(0, allVillagers.Count)];
+        picked.Add(pickedEvil);
 
         var closestEvil = GetClosestEvilToEvil(pickedEvil, charRef);
 
         info = ConjourInfo(pickedEvil.GetRegisterAs().name, closestEvil.Item1);
-        ActedInfo newInfo = new ActedInfo(info);
+        ActedInfo newInfo = new ActedInfo(info, picked);
         return newInfo;
     }
 
@@ -46,25 +48,27 @@ public class Detective : Role
     {
         string info = "";
 
+        Il2CppSystem.Collections.Generic.List<Character> picked = new Il2CppSystem.Collections.Generic.List<Character>();
         Il2CppSystem.Collections.Generic.List<Character> allVillagers = new Il2CppSystem.Collections.Generic.List<Character>();
         allVillagers = Characters.Instance.FilterCharacterType(Gameplay.CurrentCharacters, ECharacterType.Villager);
         //allVillagers = Characters.Instance.RemoveCharacterType<Recluse>(allVillagers);
 
         allVillagers.Remove(charRef);
         Character pickedEvil = allVillagers[UnityEngine.Random.Range(0, allVillagers.Count)];
+        picked.Add(pickedEvil);
 
         var closestEvil = GetClosestEvilToEvil(pickedEvil, charRef);
 
-        int fakeDist = closestEvil.Item1;
-        if (fakeDist == 1) fakeDist = 2;
-        else fakeDist -= 1;
+        int realNum = closestEvil.Item1;
+        int averageNum = 2;
+        int fakeDist = Ext.MakeNumberWrong(realNum, averageNum, 1);
 
         info = ConjourInfo(pickedEvil.GetRegisterAs().name, fakeDist);
-        ActedInfo newInfo = new ActedInfo(info);
+        ActedInfo newInfo = new ActedInfo(info, picked);
         return newInfo;
     }
 
-    public (int, Character?) GetClosestEvilToEvil(Character pickedEvil, Character chRef)
+    public (int, Character?) GetClosestEvilToEvil(Character pickedEvil, Character chRef) // Scout code but modified.
     {
         int count = 0;
         int savedCount = 100;

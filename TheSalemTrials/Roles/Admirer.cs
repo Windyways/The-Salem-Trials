@@ -69,8 +69,7 @@ public class Admirer : Role
         chars.Add(CharacterPicker.PickedCharacters[0]);
 
         string info = $"";
-        if (chars[0].IsLying()) info = $"#{chars[0].id}\nis pure of Corruption.";
-        else if (!chars[0].IsCorrupted()) info = $"#{chars[0].id}\nis Corrupted!";
+        if (!chars[0].IsCorrupted()) info = $"#{chars[0].id}\nis Corrupted!";
         else info = $"#{chars[0].id}\nis pure of Corruption.";
 
         onActed?.Invoke(new ActedInfo(info, chars));

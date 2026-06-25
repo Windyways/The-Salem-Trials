@@ -48,7 +48,7 @@ namespace TheSalemTrials
             onActed?.Invoke(GetBluffInfo(charRef));
         }
 
-        public int CheckAdjacentEvils(Character charRef)
+        public int CheckAdjacentEvils(Character charRef) // Lover code.
         {
             Il2CppSystem.Collections.Generic.List<Character> adjacentCharacters = new Il2CppSystem.Collections.Generic.List<Character>();
             foreach (Character ch in Gameplay.CurrentCharacters)
@@ -69,7 +69,7 @@ namespace TheSalemTrials
             return evils;
         }
 
-        public int CheckAdjacentLiars(Character charRef)
+        public int CheckAdjacentLiars(Character charRef) // Lover code but modified.
         {
             Il2CppSystem.Collections.Generic.List<Character> adjacentCharacters = new Il2CppSystem.Collections.Generic.List<Character>();
             foreach (Character ch in Gameplay.CurrentCharacters)
