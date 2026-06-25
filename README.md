@@ -10,7 +10,7 @@ To add the custom character sprites, you can download the 'ArtSwap' zip for the 
 Roles in this mod:
 
 VILLAGERS
-- Sheriff - Learn how many liars are adjacent to you.
+- Sheriff - Learn how many liars are adjacent to me.
 - Admirer - Pick 1 character: Learn if they are Corrupted.
 - Detective - Learn how close an evil is to a random Good Villager.
 - Seer - Pick 2 characters: Learn 1 thing they have in common.
