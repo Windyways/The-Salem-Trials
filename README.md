@@ -1,5 +1,5 @@
 # The-Salem-Trials
-This is a mod for the game Demon Bluff, which adds new characters based on Town Of Salem 2 role silhouettes.
+This is a mod for the game Demon Bluff, which adds new characters with simple mechanics, based on Town Of Salem 2 role silhouettes.
 Note: I am new to modding Demon Bluff (with a lot of experience with modding other games) so if you find any bugs, you can let me know at my discord @fiftyiq.
 
 Special thanks to Wingidon, since this mod's base is theirs, as well as helping with some coding & feedback. If you want to check out their Demon Bluff Mod 'Demon Bluff Expansion Pack', you can find it here: https://github.com/Wingidon/Wingidon-s-Demon-Bluff-Expansion-Pack
@@ -10,9 +10,9 @@ To add the custom character sprites, you can download the 'ArtSwap' zip for the 
 Roles in this mod:
 
 VILLAGERS
-- Sheriff - Learn how many liars are adjacent to you. (Mix of Lover + Judge)
-- Admirer - Pick 1 character: Learn if they are Corrupted. (Village Plague Doctor)
-- Detective - Learn how close an evil is to a random Good Villager. (Alternative to Scout)
+- Sheriff - Learn how many liars are adjacent to you.
+- Admirer - Pick 1 character: Learn if they are Corrupted.
+- Detective - Learn how close an evil is to a random Good Villager.
 - Seer - Pick 2 characters: Learn 1 thing they have in common.
 - Cleric - Reveal: Cleanse 1 Good Villager of Corruption (if possible). I Learn who I Cleanse.
 - Psychic - Learn how many Evils have been Revealed.
