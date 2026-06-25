@@ -8,6 +8,7 @@ This mod is meant to be used with Art Swap. To download that, you can find it he
 To add the custom character sprites, you can download the 'ArtSwap' zip for the latest versions and drop the files inside the 'ArtSwap' folder in the Mods section from your Demon Bluff directory.
 
 Roles in this mod:
+
 VILLAGERS
 - Sheriff - Learn how many liars are adjacent to you. (Mix of Lover + Judge)
 - Admirer - Pick 1 character: Learn if they are Corrupted. (Village Plague Doctor)
