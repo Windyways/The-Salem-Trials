@@ -18,5 +18,5 @@ VILLAGERS
 - Psychic - Learn how many Evils have been Revealed.
 
 MINIONS
-- Illusionist - I Lie and Disguise as a not-in-play Villager. (Alternative to Minion)
-- Shroud - I Lie and Disguise as an in-play Outcast or Villager.
+- Illusionist - I Lie and Disguise as a not-in-play Villager.
+- Shroud - I Lie and Disguise as an in-play Outcast or Villager (if possible).
