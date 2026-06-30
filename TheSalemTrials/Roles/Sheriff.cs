@@ -25,14 +25,12 @@ namespace TheSalemTrials
 
         public override ActedInfo GetBluffInfo(Character charRef)
         {
-            var liars = 0;
-            int evils = CheckAdjacentEvils(charRef);
-            if (evils == 0) liars = 2;
-            else liars = 0;
+            int realNum = CheckAdjacentLiars(charRef);
+            int avgNum = 1;
+            int liars = Ext.MakeNumberWrong(realNum, avgNum, 0);
 
             string info = ConjourInfo(liars);
             ActedInfo newInfo = new ActedInfo(info, Characters.Instance.GetAdjacentCharacters(charRef));
-
             return newInfo;
         }
 
@@ -48,27 +46,6 @@ namespace TheSalemTrials
             onActed?.Invoke(GetBluffInfo(charRef));
         }
 
-        public int CheckAdjacentEvils(Character charRef) // Lover code.
-        {
-            Il2CppSystem.Collections.Generic.List<Character> adjacentCharacters = new Il2CppSystem.Collections.Generic.List<Character>();
-            foreach (Character ch in Gameplay.CurrentCharacters)
-                if (charRef == ch)
-                {
-                    adjacentCharacters = Characters.Instance.GetAdjacentCharacters(ch);
-                    break;
-                }
-
-            int evils = 0;
-
-            foreach (Character ch in adjacentCharacters)
-            {
-                if (ch.alignment == EAlignment.Evil)
-                    evils++;
-            }
-
-            return evils;
-        }
-
         public int CheckAdjacentLiars(Character charRef) // Lover code but modified.
         {
             Il2CppSystem.Collections.Generic.List<Character> adjacentCharacters = new Il2CppSystem.Collections.Generic.List<Character>();
@@ -79,26 +56,26 @@ namespace TheSalemTrials
                     break;
                 }
 
-            int evils = 0;
+            int liars = 0;
 
             foreach (Character ch in adjacentCharacters)
             {
                 if (ch.IsLying())
-                    evils++;
+                    liars++;
             }
 
-            return evils;
+            return liars;
         }
 
-        public string ConjourInfo(int evils)
+        public string ConjourInfo(int liars)
         {
             string info = "";
-            if (evils == 0)
+            if (liars == 0)
                 info = $"NO Liars\nadjacent to me";
-            else if (evils == 1)
-                info = $"{evils} Liar\nadjacent to me";
+            else if (liars == 1)
+                info = $"{liars} Liar\nadjacent to me";
             else
-                info = $"{evils} Liars\nadjacent to me";
+                info = $"{liars} Liars\nadjacent to me";
 
             return info;
         }

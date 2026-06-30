@@ -47,8 +47,6 @@ namespace TheSalemTrials
             Il2CppSystem.Collections.Generic.List<Character> picked = new Il2CppSystem.Collections.Generic.List<Character>();
             Il2CppSystem.Collections.Generic.List<Character> chars = new Il2CppSystem.Collections.Generic.List<Character>();
             chars = Characters.Instance.FilterAliveCharacters(Gameplay.CurrentCharacters);
-            chars = Characters.Instance.FilterCharacterType(chars, ECharacterType.Villager);
-            chars = Characters.Instance.FilterAlignmentCharacters(chars, EAlignment.Good);
             chars = Characters.Instance.FilterCharacterMissingStatus(chars, ECharacterStatus.Corrupted);
 
             Character c = chars[UnityEngine.Random.Range(0, chars.Count)];

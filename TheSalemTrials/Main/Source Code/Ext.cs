@@ -16,6 +16,7 @@ namespace TheSalemTrials
     {
         public static bool IsDisguising(this Character c) => c.bluff;
         public static bool IsCorrupted(this Character c) => c.statuses.Contains(ECharacterStatus.Corrupted);
+        public static bool IsHeretic(this Character c) => c.statuses.Contains(HereticStatus.heretic);
         public static bool IsLying(this Character c)
         {
             bool isLying = false;
@@ -48,6 +49,10 @@ namespace TheSalemTrials
         public static int MakeNumberWrong(int trueNumber, int falseNumber, int minimum)
         {
             int returnVal = falseNumber;
+            if (returnVal < minimum)
+            {
+                while (returnVal < minimum) returnVal++;
+            }
             if (trueNumber != falseNumber) return falseNumber;
             if (falseNumber == minimum) returnVal++;
             else returnVal--;

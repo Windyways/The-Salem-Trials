@@ -19,7 +19,6 @@ namespace TheSalemTrials
             Il2CppSystem.Collections.Generic.List<Character> displaychars = new Il2CppSystem.Collections.Generic.List<Character>();
             displaychars = Characters.Instance.FilterAliveCharacters(Gameplay.CurrentCharacters);
             displaychars = Characters.Instance.FilterRevealedCharacters(displaychars);
-            displaychars = Characters.Instance.FilterRevealedCharacters(displaychars);
 
             Il2CppSystem.Collections.Generic.List<Character> chars = new Il2CppSystem.Collections.Generic.List<Character>();
             chars = Characters.Instance.FilterAliveCharacters(Gameplay.CurrentCharacters);
@@ -66,9 +65,9 @@ namespace TheSalemTrials
 
         public string ConjourInfo(int revealedEvils)
         {
-            if (revealedEvils == 0) return $"There is {revealedEvils}\nRevealed Evils.";
+            if (revealedEvils == 0) return $"There are {revealedEvils}\nRevealed Evils.";
             else if (revealedEvils == 1) return $"There is {revealedEvils}\nRevealed Evil.";
-            return $"There is {revealedEvils}\nRevealed Evils.";
+            return $"There are {revealedEvils}\nRevealed Evils.";
         }
     }
 }

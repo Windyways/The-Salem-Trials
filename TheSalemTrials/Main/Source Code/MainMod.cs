@@ -1,10 +1,10 @@
-﻿using TheSalemTrials;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
+using Il2CppSystem.Runtime.Remoting.Lifetime;
 using Il2CppSystem.Runtime.Remoting.Messaging;
 using MelonLoader;
 using MelonLoader.Utils;
@@ -12,13 +12,14 @@ using System;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
+using TheSalemTrials;
 using UnityEngine;
 using UnityEngine.Playables;
 using static Il2Cpp.GameplayEvents;
 using static Il2CppSystem.Array;
 using static MelonLoader.Modules.MelonModule;
 
-[assembly: MelonInfo(typeof(MainMod), "Windyways_TheSalemTrials", "1.2.0", "Windyways")]
+[assembly: MelonInfo(typeof(MainMod), "Windyways_TheSalemTrials", "1.3.0", "Windyways")]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace TheSalemTrials;
@@ -33,9 +34,11 @@ public class MainMod : MelonMod
         ClassInjector.RegisterTypeInIl2Cpp<Seer>();
         ClassInjector.RegisterTypeInIl2Cpp<Cleric>();
         ClassInjector.RegisterTypeInIl2Cpp<Psychic>();
+        ClassInjector.RegisterTypeInIl2Cpp<Sibyl>();
+        ClassInjector.RegisterTypeInIl2Cpp<Inquisitor>();
 
         // Outcasts
-        //ClassInjector.RegisterTypeInIl2Cpp<Starspawn>();
+        ClassInjector.RegisterTypeInIl2Cpp<Joker>();
 
         // Minions
         ClassInjector.RegisterTypeInIl2Cpp<Illusionist>();
@@ -70,61 +73,77 @@ public class MainMod : MelonMod
         // --- VILLAGERS ---
         CharacterData sheriff = newCharacter("Sheriff", EAlignment.Good, ECharacterType.Villager, true, false, "\"The gun shows 'em who's boss. Don't lie to me.\"", "Bishop_58855542");
         sheriff.role = new Sheriff();
-        sheriff.description = "Learn how many liars are adjacent to me.";
-        sheriff.ifLies = $"I say '0 Liars' if there are adjacent Evils.\nI say '2 Liars' if there are no adjacent Evils.";
+        sheriff.description = "Learn how many Liars are adjacent to me.";
+        sheriff.ifLies = $"I do not say the {formattedKeyText("Truth")}.";
         sheriff.gender = EGender.Male;
 
         CharacterData admirer = newCharacter("Admirer", EAlignment.Good, ECharacterType.Villager, true, false, "\"This may sound creepy, but i watched her through the window.\"", "Bishop_58855542");
         admirer.role = new Admirer();
         admirer.description = "Pick 1 character:\nLearn if they are Corrupted.";
-        admirer.ifLies = $"I say the opposite from the Truth.";
+        admirer.ifLies = $"I say the opposite from the {formattedKeyText("Truth")}.";
         admirer.picking = true;
         admirer.abilityUsage = EAbilityUsage.Once;
         admirer.gender = EGender.Male;
 
         CharacterData detective = newCharacter("Detective", EAlignment.Good, ECharacterType.Villager, true, false, "\"The Investigator wonders why i’m better than him. I told him ‘because i just am’.\"", "Bishop_58855542");
         detective.role = new Detective();
-        detective.description = "Learn how close an evil is to a random Good Villager.";
-        detective.ifLies = $"I do not say the Truth.";
+        detective.description = "Learn how close an Evil is to a random Good Villager.";
+        detective.ifLies = $"I reference how close a Good character is to a random character.";
         detective.hints = "I cannot reference myself in my information.";
         detective.gender = EGender.Male;
 
         CharacterData seer = newCharacter("Seer", EAlignment.Good, ECharacterType.Villager, true, false, "\"I can look into who has the truest hearts. The Lover isn’t one of them.\"", "Bishop_58855542");
         seer.role = new Seer();
         seer.description = "Pick 2 characters:\nLearn 1 thing they have in common.";
-        seer.ifLies = $"I say random false information."; // (duh)
-        seer.hints = "I prioritize:\nCorrupted > Disguised > Evil > Good.";
+        seer.ifLies = $"I do not say the {formattedKeyText("Truth")}."; // (duh)
+        seer.hints = $"I prioritize:\nCorrupted > Disguised > {formattedKeyText("Heretic")} > Alignment.";
         seer.picking = true;
         seer.abilityUsage = EAbilityUsage.Once;
         seer.gender = EGender.Male;
 
-        CharacterData cleric = newCharacter("Cleric", EAlignment.Good, ECharacterType.Villager, true, false, "\"I am skilled in the art of purification. Unlike those people.\"", "Bishop_58855542");
+        CharacterData cleric = newCharacter("Cleric", EAlignment.Good, ECharacterType.Villager, true, false, "\"I am skilled in the art of purification. Unlike that Alchemist.\"", "Bishop_58855542");
         cleric.role = new Cleric();
-        cleric.description = "Reveal:\nCleanse 1 Good Villager of Corruption (if possible). I Learn who I Cleansed.";
-        cleric.ifLies = $"I say opposite from the Truth and I do not Cleanse.";
-        cleric.hints = "If I am Revealed before I Cleanse my target, they will still Lie.";
+        cleric.description = "Reveal:\nCure 1 Good Villager of Corruption (if possible). I Learn who I Cure.";
+        cleric.ifLies = $"I say opposite from the {formattedKeyText("Truth")} and I do not Cure.\nI may reference any character.";
+        cleric.hints = "If I am Revealed before I Cure my target, they will still Lie.";
         cleric.gender = EGender.Male;
 
-        CharacterData psychic = newCharacter("Psychic", EAlignment.Good, ECharacterType.Villager, true, false, "\"The gun shows 'em who's boss. Don't lie to me.\"", "Bishop_58855542");
+        CharacterData psychic = newCharacter("Psychic", EAlignment.Good, ECharacterType.Villager, true, false, "\"I can foresee the future better than the Medium.\"", "Bishop_58855542");
         psychic.role = new Psychic();
         psychic.description = "Learn how many Evils have been Revealed.";
-        psychic.ifLies = $"I do not say the Truth.";
+        psychic.ifLies = $"I do not say the {formattedKeyText("Truth")}.";
         psychic.gender = EGender.Male;
 
+        CharacterData sibyl = newCharacter("Sibyl", EAlignment.Good, ECharacterType.Villager, true, false, "\"Normally I am the protector, but things have changed.\"", "Bishop_58855542");
+        sibyl.role = new Sibyl();
+        sibyl.description = "Learn how many Evils are unrevealed.";
+        sibyl.ifLies = $"I do not say the {formattedKeyText("Truth")}.";
+        sibyl.hints = "I do not include myself in my info.";
+        sibyl.gender = EGender.Male;
+
+        CharacterData inquisitor = newCharacter("Inquisitor", EAlignment.Good, ECharacterType.Villager, true, false, "\"The Heretics have become predictable.\"", "Gambler_42592744");
+        inquisitor.role = new Inquisitor();
+        inquisitor.description = $"Game Start:\nTwo random Evil and Good characters have the {formattedKeyText("Heretic")} status.\n\nPick 1 character:\nIf {formattedKeyText("Heretic")}, Learn if they are Good or Evil.";
+        inquisitor.ifLies = $"I say the opposite from the {formattedKeyText("Truth")}.";
+        inquisitor.hints = $"My ability refreshes after each Night.";
+        inquisitor.picking = true;
+        inquisitor.abilityUsage = EAbilityUsage.ResetAfterNight;
+        inquisitor.gender = EGender.Male;
+
         // --- OUTCASTS ---
-        /*CharacterData starspawn = newCharacter("Starspawn", EAlignment.Good, ECharacterType.Outcast, true, true, "\"I don’t like to reveal my identity. But i am talented at everything.\"", "Imp_58992273");
-        starspawn.role = new Starspawn();
-        starspawn.description = "I Disguise as an in-play Outcast (if possible).";
-        starspawn.gender = EGender.Male; - I'll find a possible solution to make this different from Doppel.
-        */
+        CharacterData joker = newCharacter("Joker", EAlignment.Good, ECharacterType.Outcast, true, false, "\"People never take me seriously for my jokes.\"", "Imp_58992273");
+        joker.role = new Joker();
+        joker.description = "Learn random Salem info. I Lie about it.";
+        joker.ifLies = $"I do not say the {formattedKeyText("Truth")}.";
+        joker.gender = EGender.Male;
 
         // --- MINIONS ---
-        CharacterData illusionist = newCharacter("Illusionist", EAlignment.Evil, ECharacterType.Minion, true, true, "\"I am the best at casting magic huh?\"", "Imp_58992273");
+        CharacterData illusionist = newCharacter("Illusionist", EAlignment.Evil, ECharacterType.Minion, false, true, "\"I am the best at casting magic huh?\"", "Imp_58992273");
         illusionist.role = new Illusionist();
-        illusionist.description = "I Lie and Disguise as a not-in-play Villager.";
+        illusionist.description = "I Lie and Disguise as a not in-play Villager.";
         illusionist.gender = EGender.Male;
 
-        CharacterData shroud = newCharacter("Shroud", EAlignment.Evil, ECharacterType.Minion, true, true, "\"I’m like, literally a ghost. That’s bluffing. Yeah.\"", "Imp_58992273");
+        CharacterData shroud = newCharacter("Shroud", EAlignment.Evil, ECharacterType.Minion, false, true, "\"I’m like, literally a ghost. That’s bluffing. Yeah.\"", "Imp_58992273");
         shroud.role = new Shroud();
         shroud.description = "I Lie and Disguise as an in-play Outcast or Villager (if possible).";
         shroud.hints = "If there are no valid characters to Disguise as, i will not Lie or Disguise.";
@@ -134,7 +153,7 @@ public class MainMod : MelonMod
 
 
         // Vanilla order: Baa, Chancellor, Pooka, Poisoner, Witch, Puppeteer, Plague Doctor, Shaman, Alchemist, Puppet, Lilis
-        //Characters.Instance.startGameActOrder = InsertAfterAct("Chancellor", vampire);
+        Characters.Instance.startGameActOrder = InsertAfterAct("Lilis", inquisitor);
 
         AscensionsData advancedAscension = ProjectContext.Instance.gameData.advancedAscension;
 
@@ -162,8 +181,10 @@ public class MainMod : MelonMod
             addRole(script.startingTownsfolks, seer);
             addRole(script.startingTownsfolks, cleric);
             addRole(script.startingTownsfolks, psychic);
+            addRole(script.startingTownsfolks, sibyl);
+            addRole(script.startingTownsfolks, inquisitor);
 
-            //addRole(script.startingOutsiders, starspawn);
+            addRole(script.startingOutsiders, joker);
 
             addRole(script.startingMinions, illusionist);
             addRole(script.startingMinions, shroud);
@@ -693,7 +714,8 @@ public class MainMod : MelonMod
         switch (target)
         {
             // Keywords
-            case "Cleanse": return "<color=#a0d1d0>Cleanse</color>";
+            case "Heretic": return "<color=#511432>Heretic</color>";
+            case "Truth": return "<color=#7bc753>Truth</color>";
 
             // Colours
             case "VillagerColour": return "<color=#B656DD>";

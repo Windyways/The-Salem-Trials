@@ -1,10 +1,7 @@
 ﻿using Il2Cpp;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes;
-using Il2CppSystem;
 using MelonLoader;
-using System;
-using System.ComponentModel.Design;
 using UnityEngine;
 
 namespace TheSalemTrials;
@@ -57,7 +54,6 @@ public class Admirer : Role
         else info = $"#{chars[0].id}\nis pure of Corruption.";
 
         onActed?.Invoke(new ActedInfo(info, chars));
-        Debug.Log($"{info}");
     }
 
     private void CharacterPickedLiar()
@@ -73,7 +69,6 @@ public class Admirer : Role
         else info = $"#{chars[0].id}\nis pure of Corruption.";
 
         onActed?.Invoke(new ActedInfo(info, chars));
-        Debug.Log($"{info}");
     }
 
     private void StopPick()

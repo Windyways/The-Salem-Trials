@@ -1,11 +1,7 @@
 ﻿using Il2Cpp;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes;
-using Il2CppSystem;
 using MelonLoader;
-using System;
-using System.ComponentModel.Design;
-using UnityEngine;
 
 namespace TheSalemTrials;
 
@@ -25,9 +21,9 @@ public class Detective : Role
         Character pickedEvil = allVillagers[UnityEngine.Random.Range(0, allVillagers.Count)];
         picked.Add(pickedEvil);
 
-        var closestEvil = GetClosestEvilToEvil(pickedEvil, charRef);
+        var closestEvil = GetClosestEvilToGood(pickedEvil, charRef);
 
-        info = ConjourInfo(pickedEvil.GetRegisterAs().name, closestEvil.Item1);
+        info = ConjourInfo(pickedEvil, closestEvil.Item1);
         ActedInfo newInfo = new ActedInfo(info, picked);
         return newInfo;
     }
@@ -50,25 +46,21 @@ public class Detective : Role
 
         Il2CppSystem.Collections.Generic.List<Character> picked = new Il2CppSystem.Collections.Generic.List<Character>();
         Il2CppSystem.Collections.Generic.List<Character> allVillagers = new Il2CppSystem.Collections.Generic.List<Character>();
-        allVillagers = Characters.Instance.FilterCharacterType(Gameplay.CurrentCharacters, ECharacterType.Villager);
+        allVillagers = Characters.Instance.FilterAliveCharacters(Gameplay.CurrentCharacters);
         //allVillagers = Characters.Instance.RemoveCharacterType<Recluse>(allVillagers);
 
         allVillagers.Remove(charRef);
         Character pickedEvil = allVillagers[UnityEngine.Random.Range(0, allVillagers.Count)];
         picked.Add(pickedEvil);
 
-        var closestEvil = GetClosestEvilToEvil(pickedEvil, charRef);
+        var closestEvil = GetClosestGoodToRandom(pickedEvil, charRef);
 
-        int realNum = closestEvil.Item1;
-        int averageNum = 2;
-        int fakeDist = Ext.MakeNumberWrong(realNum, averageNum, 1);
-
-        info = ConjourInfo(pickedEvil.GetRegisterAs().name, fakeDist);
+        info = ConjourInfo(pickedEvil, closestEvil.Item1);
         ActedInfo newInfo = new ActedInfo(info, picked);
         return newInfo;
     }
 
-    public (int, Character?) GetClosestEvilToEvil(Character pickedEvil, Character chRef) // Scout code but modified.
+    public (int, Character?) GetClosestEvilToGood(Character pickedEvil, Character chRef) // Scout code but modified.
     {
         int count = 0;
         int savedCount = 100;
@@ -109,8 +101,52 @@ public class Detective : Role
         return (savedCount, closestEvil);
     }
 
-    public string ConjourInfo(string charName, int steps)
+    public (int, Character?) GetClosestGoodToRandom(Character pickedEvil, Character chRef) // Scout code but modified.
     {
+        int count = 0;
+        int savedCount = 100;
+        Character? closestEvil = null;
+
+        Il2CppSystem.Collections.Generic.List<Character> myList = new Il2CppSystem.Collections.Generic.List<Character>();
+        myList = Characters.Instance.FilterAliveCharacters(Gameplay.CurrentCharacters);
+        myList = CharactersHelper.GetSortedListWithCharacterFirst(myList, pickedEvil);
+
+        myList.RemoveAt(0);
+        for (int i = 0; i < myList.Count; i++)
+        {
+            if (myList[i].alignment == EAlignment.Good)
+            {
+                closestEvil = myList[i];
+                savedCount = count;
+                count = 0;
+                break;
+            }
+            count++;
+        }
+        count = 0;
+        for (int i = myList.Count - 1; i > 0; i--)
+        {
+            if (myList[i].alignment == EAlignment.Evil)
+            {
+                if (count < savedCount)
+                {
+                    closestEvil = myList[i];
+                    savedCount = count;
+                    count = 0;
+                }
+                break;
+            }
+            count++;
+        }
+
+        return (savedCount, closestEvil);
+    }
+
+    public string ConjourInfo(Character c, int steps)
+    {
+        string charName = c.GetRegisterAs().name;
+        if (c.bluff != null) charName = c.bluff.name;
+
         if (steps > 20)
             return $"There are no valid Villagers.";
         else if (steps == 0)

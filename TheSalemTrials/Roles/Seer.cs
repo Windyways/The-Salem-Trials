@@ -1,11 +1,7 @@
 ﻿using Il2Cpp;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes;
-using Il2CppSystem;
 using MelonLoader;
-using System;
-using System.ComponentModel.Design;
-using UnityEngine;
 
 namespace TheSalemTrials;
 
@@ -16,8 +12,9 @@ public class Seer : Role // Code base from Arbiter from Demon Bluff Expansion Pa
     private Il2CppSystem.Action action1;
     private Il2CppSystem.Action action2;
     private Il2CppSystem.Action action3;
+
     public override ActedInfo GetInfo(Character charRef)
-    {
+    { 
         return new ActedInfo("", null);
     }
 
@@ -56,13 +53,14 @@ public class Seer : Role // Code base from Arbiter from Demon Bluff Expansion Pa
         int index = 0;
         if (chars[0].IsCorrupted() && chars[1].IsCorrupted()) index = 1;
         else if (chars[0].IsDisguising() && chars[1].IsDisguising()) index = 2;
+        else if (chars[0].IsHeretic() && chars[1].IsHeretic()) index = 4;
         else if (chars[0].alignment == chars[1].alignment) index = 3;
 
         string info = InfoFromIndex(chars[0], chars[1], index);
         onActed?.Invoke(new ActedInfo(info, chars));
     }
 
-    private void CharacterPickedLiar() // Pain in the butt to comprehend.
+    private void CharacterPickedLiar() 
     {
         CharacterPicker.OnCharactersPicked -= action1;
         CharacterPicker.OnStopPick -= action2;
@@ -117,6 +115,7 @@ public class Seer : Role // Code base from Arbiter from Demon Bluff Expansion Pa
         int index = 0;
         if (chars[0].IsCorrupted() && chars[1].IsCorrupted()) index = 1;
         else if (chars[0].IsDisguising() && chars[1].IsDisguising()) index = 2;
+        else if (chars[0].IsHeretic() && chars[1].IsHeretic()) index = 4;
         else if (chars[0].alignment == chars[1].alignment) index = 3;
 
         string info = InfoFromIndex(chars[0], chars[1], Ext.MakeNumberWrong(index, 2, 0));
@@ -150,6 +149,7 @@ public class Seer : Role // Code base from Arbiter from Demon Bluff Expansion Pa
         if (index == 1) return $"#{c1.id} and #{c2.id}\nare both\nCorrupted!";
         if (index == 2) return $"#{c1.id} and #{c2.id}\nare both\nDisguising!";
         if (index == 3) return $"#{c1.id} and #{c2.id}\nhave the same alignment!";
+        if (index == 4) return $"#{c1.id} and #{c2.id}\nare both\nHeretics!";
         return $"#{c1.id} and #{c2.id}\nhave nothing in common!";
     }
 }
