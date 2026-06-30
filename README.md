@@ -16,6 +16,11 @@ VILLAGERS
 - Seer - Pick 2 characters: Learn 1 thing they have in common.
 - Cleric - Reveal: Cleanse 1 Good Villager of Corruption (if possible). I Learn who I Cleanse.
 - Psychic - Learn how many Evils have been Revealed.
+- Sibyl - Learn how many Evils are unrevealed.
+- Inquisitor - Game Start: Two random Evil and Good characters have the Heretic status. Pick 1 character: If Heretic, Learn if they are Good or Evil.
+
+OUTCASTS
+- Joker - Learn random Salem info. I Lie about it.
 
 MINIONS
 - Illusionist - I Lie and Disguise as a not-in-play Villager.
